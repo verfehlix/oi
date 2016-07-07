@@ -1,11 +1,19 @@
 window.onload = init;
+
 function init() {
+	//SETTINGS
+	var width = 640;
+	var height = 760;
+
 	//ALIASES
-	var Container = PIXI.Container, autoDetectRenderer = PIXI.autoDetectRenderer,
-		loader = PIXI.loader, resources = PIXI.loader.resources, Sprite = PIXI.Sprite;
+	var Container = PIXI.Container,
+		autoDetectRenderer = PIXI.autoDetectRenderer,
+		loader = PIXI.loader,
+		resources = PIXI.loader.resources,
+		Sprite = PIXI.Sprite;
 
 	//RENDERER & STAGE
-	var renderer = PIXI.autoDetectRenderer(640, 760),
+	var renderer = PIXI.autoDetectRenderer(width, height),
 		stage = new PIXI.Container();
 	document.body.appendChild(renderer.view);
 
@@ -15,7 +23,7 @@ function init() {
 		cat.vx = -1;
 	};
 	arrowLeft.release = function() {
-		if(!arrowRight.isDown && cat.vy === 0){
+		if (!arrowRight.isDown && cat.vy === 0) {
 			cat.vx = 0;
 		}
 	};
@@ -26,8 +34,8 @@ function init() {
 	};
 	arrowRight.release = function() {
 		if (!arrowLeft.isDown && cat.vy === 0) {
-      cat.vx = 0;
-    }
+			cat.vx = 0;
+		}
 	};
 
 	var spacebar = keyboard(32);
@@ -38,36 +46,41 @@ function init() {
 		cat.vy = 0;
 	};
 
+	var enter = keyboard(13);
+	enter.press = function() {
+		if(gameState === intro){
+			gameState = game;
+		}
+	};
+	enter.release = function() {};
+
 	//IMAGE LOADING
 	loader
-  .add("catImage","img/cat.png")
-  .load(setup);
+		.add("catImage", "img/cat.png")
+		.load(setup);
+
 
 	//sprites, etc.
-	var cat, message;
+	var gameState, message, cat;
 
-	function setup() {
+	var introInitHasBeenCalled = false;
+	var gameInitHasBeenCalled = false;
+
+	function setupCat() {
 		cat = new Sprite(
 			PIXI.loader.resources.catImage.texture
 		);
 
-		message = new PIXI.Text(
-		  "Jump!",
-		  {font: "25px sans-serif", fill: "white"}
-		);
-		message.position.set(10, 10);
-		stage.addChild(message);
-
 		cat.x = 100;
 		cat.y = 200;
 
-		cat.anchor.set(0.5,0.5);
+		cat.anchor.set(0.5, 0.5);
 		cat.rotation = 0.25;
 
 		cat.vx = 0;
 		cat.vy = 0;
 
-		cat.move = function(){
+		cat.move = function() {
 			this.x += this.vx;
 			this.y += this.vy;
 		}
@@ -75,6 +88,10 @@ function init() {
 		cat.vy = 0;
 
 		stage.addChild(cat);
+	};
+
+	function setup() {
+		gameState = intro;
 
 		gameLoop();
 	};
@@ -82,13 +99,37 @@ function init() {
 	//GAME LOOP
 	function gameLoop() {
 
-	  //Loop this function at 60 frames per second
-	  requestAnimationFrame(gameLoop);
+		//Loop this function at 60 frames per second
+		requestAnimationFrame(gameLoop);
 
-	  //Move the cat 1 pixel to the right each frame
-	  cat.move();
+		gameState();
 
-	  //Render the stage to see the animation
-	  renderer.render(stage);
+		//Render the stage to see the animation
+		renderer.render(stage);
 	}
+
+	var intro = function() {
+		if(!introInitHasBeenCalled){
+			message = new PIXI.Text(
+				"   READY PLAYER ONE \n Press Enter to Start", {
+					font: "25px Source Code Pro",
+					fill: "white"
+				}
+			);
+			message.position.set(width/2-160, height/2-20);
+			stage.addChild(message);
+
+			introInitHasBeenCalled = true;
+		}
+	};
+
+	var game = function() {
+		if(!gameInitHasBeenCalled){
+			stage.removeChild(message);
+			setupCat();
+			gameInitHasBeenCalled = true;
+		}
+
+		cat.move();
+	};
 }
