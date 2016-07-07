@@ -6,11 +6,20 @@ function init() {
 	var height = 760;
 
 	//ALIASES
+	//pixi js
 	var Container = PIXI.Container,
 		autoDetectRenderer = PIXI.autoDetectRenderer,
 		loader = PIXI.loader,
 		resources = PIXI.loader.resources,
 		Sprite = PIXI.Sprite;
+	//matter js
+	var Engine = Matter.Engine,
+	    World = Matter.World,
+	    Bodies = Matter.Bodies;
+
+	//MATTER JS ENGINE
+	var engine = Engine.create();
+
 
 	//RENDERER & STAGE
 	var renderer = PIXI.autoDetectRenderer(width, height),
@@ -61,7 +70,7 @@ function init() {
 
 
 	//sprites, etc.
-	var gameState, message, cat;
+	var gameState, message, cat, boxA, boxB, ground;
 
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
@@ -74,8 +83,8 @@ function init() {
 		cat.x = 100;
 		cat.y = 200;
 
-		cat.anchor.set(0.5, 0.5);
-		cat.rotation = 0.25;
+		// cat.anchor.set(0.5, 0.5);
+		// cat.rotation = 0.25;
 
 		cat.vx = 0;
 		cat.vy = 0;
@@ -126,10 +135,38 @@ function init() {
 	var game = function() {
 		if(!gameInitHasBeenCalled){
 			stage.removeChild(message);
-			setupCat();
+			// setupCat();
+
+			// create two boxes and a ground
+			boxA = Bodies.rectangle(400, 200, 80, 80);
+			boxB = Bodies.rectangle(450, 50, 80, 80);
+			ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+			//add them to the world
+			World.add(engine.world, [boxA, boxB, ground]);
+
+			Engine.run(engine);
+
 			gameInitHasBeenCalled = true;
 		}
 
-		cat.move();
+		// cat.move();
+	};
+
+	function render(){
+		var bodies = Composite.allBodies(World);
+
+		for (var i = 0; i < bodies.length; i += 1) {
+	        var vertices = bodies[i].vertices;
+
+	        context.moveTo(vertices[0].x, vertices[0].y);
+
+	        for (var j = 1; j < vertices.length; j += 1) {
+	            context.lineTo(vertices[j].x, vertices[j].y);
+	        }
+
+	        context.lineTo(vertices[0].x, vertices[0].y);
+	    }
+
 	};
 }
