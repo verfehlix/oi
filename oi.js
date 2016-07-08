@@ -20,7 +20,6 @@ function init() {
 	//MATTER JS ENGINE
 	var engine = Engine.create();
 
-
 	//RENDERER & STAGE
 	var renderer = PIXI.autoDetectRenderer(width, height),
 		stage = new PIXI.Container();
@@ -28,32 +27,16 @@ function init() {
 
 	//KEYBOARD INPUT
 	var arrowLeft = keyboard(37);
-	arrowLeft.press = function() {
-		cat.vx = -1;
-	};
-	arrowLeft.release = function() {
-		if (!arrowRight.isDown && cat.vy === 0) {
-			cat.vx = 0;
-		}
-	};
+	arrowLeft.press = function() {};
+	arrowLeft.release = function() {};
 
 	var arrowRight = keyboard(39);
-	arrowRight.press = function() {
-		cat.vx = 1;
-	};
-	arrowRight.release = function() {
-		if (!arrowLeft.isDown && cat.vy === 0) {
-			cat.vx = 0;
-		}
-	};
+	arrowRight.press = function() {};
+	arrowRight.release = function() {};
 
 	var spacebar = keyboard(32);
-	spacebar.press = function() {
-		cat.vy = -2;
-	};
-	spacebar.release = function() {
-		cat.vy = 0;
-	};
+	spacebar.press = function() {};
+	spacebar.release = function() {};
 
 	var enter = keyboard(13);
 	enter.press = function() {
@@ -65,38 +48,39 @@ function init() {
 
 	//IMAGE LOADING
 	loader
-		.add("catImage", "img/cat.png")
+		.add("boxImage", "img/cat.png")
 		.load(setup);
 
 
 	//sprites, etc.
-	var gameState, message, cat, boxA, boxB, ground;
+	var gameState, message;
+	var bodies = [];
+	var boxes = [];
 
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
 
-	function setupCat() {
-		cat = new Sprite(
-			PIXI.loader.resources.catImage.texture
+	function Box() {
+		var box = new Sprite(
+			PIXI.loader.resources.boxImage.texture
 		);
 
-		cat.x = 100;
-		cat.y = 200;
+		box.x = 100;
+		box.y = 200;
 
-		// cat.anchor.set(0.5, 0.5);
-		// cat.rotation = 0.25;
+		box.anchor.set(0.5, 0.5);
+		// box.rotation = 0.25;
 
-		cat.vx = 0;
-		cat.vy = 0;
+		// box.move = function() {
+		// 	this.x += this.vx;
+		// 	this.y += this.vy;
+		// }
+		// box.vx = 0;
+		// box.vy = 0;
 
-		cat.move = function() {
-			this.x += this.vx;
-			this.y += this.vy;
-		}
-		cat.vx = 0;
-		cat.vy = 0;
+		stage.addChild(box);
 
-		stage.addChild(cat);
+		return box;
 	};
 
 	function setup() {
@@ -135,12 +119,31 @@ function init() {
 	var game = function() {
 		if(!gameInitHasBeenCalled){
 			stage.removeChild(message);
-			// setupCat();
 
 			// create two boxes and a ground
-			boxA = Bodies.rectangle(400, 200, 80, 80);
+			boxA = Bodies.rectangle(200, 200, 80, 80);
 			boxB = Bodies.rectangle(450, 50, 80, 80);
 			ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+			bodies.push(boxA);
+			bodies.push(boxB);
+			bodies.push(ground);
+
+			World.add(engine.world,[boxA, boxB, ground]);
+
+			boxes.push({
+				sprite: new Box(),
+				body: boxA
+			});
+
+			boxes.push({
+				sprite: new Box(),
+				body: boxB
+			});
+
+			boxes.push({
+				sprite: new Box(),
+				body: ground
+			});
 
 			//add them to the world
 			World.add(engine.world, [boxA, boxB, ground]);
@@ -150,23 +153,9 @@ function init() {
 			gameInitHasBeenCalled = true;
 		}
 
-		// cat.move();
-	};
-
-	function render(){
-		var bodies = Composite.allBodies(World);
-
-		for (var i = 0; i < bodies.length; i += 1) {
-	        var vertices = bodies[i].vertices;
-
-	        context.moveTo(vertices[0].x, vertices[0].y);
-
-	        for (var j = 1; j < vertices.length; j += 1) {
-	            context.lineTo(vertices[j].x, vertices[j].y);
-	        }
-
-	        context.lineTo(vertices[0].x, vertices[0].y);
-	    }
-
+		for(var b in boxes) {
+			boxes[b].sprite.position = boxes[b].body.position;
+			boxes[b].sprite.rotation = boxes[b].body.angle;
+		}
 	};
 }
