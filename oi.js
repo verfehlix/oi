@@ -56,6 +56,8 @@ function init() {
 	var gameState, message;
 	var bodies = [];
 
+	var helper = new Helper(stage, bodies, World, engine);
+
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
 
@@ -97,22 +99,14 @@ function init() {
 		if(!gameInitHasBeenCalled){
 			stage.removeChild(message);
 
-			var Box = new Box();
+			var ground = new Box(320, 730, 640, 60, { isStatic: true, tiling: true });
+			helper.addBody(ground);
 
-			var ground = Box.create(400, 610, 800, 60, { isStatic: true });
-			stage.addChild(ground.sprite);
-			bodies.push(ground)
-			World.add(engine.world,ground.boxPhysicsObject);
+			var boxA = new Box(200, 200, 80, 80);
+			helper.addBody(boxA);
 
-			var boxA = Box.create(200, 200, 80, 80);
-			stage.addChild(boxA.sprite);
-			bodies.push(boxA)
-			World.add(engine.world,boxA.boxPhysicsObject);
-
-			var boxB = Box.create(450, 50, 80, 80);
-			stage.addChild(boxB.sprite);
-			bodies.push(boxB)
-			World.add(engine.world,boxB.boxPhysicsObject);
+			var boxB = new Box(450, 50, 80, 80);
+			helper.addBody(boxB);
 
 			Engine.run(engine);
 
@@ -120,8 +114,8 @@ function init() {
 		}
 
 		for(var b in bodies) {
-			boxes[b].sprite.position = boxes[b].boxPhysicsObject.position;
-			boxes[b].sprite.rotation = boxes[b].boxPhysicsObject.angle;
+			bodies[b].sprite.position = bodies[b].boxPhysicsObject.position;
+			bodies[b].sprite.rotation = bodies[b].boxPhysicsObject.angle;
 		}
 	};
 }

@@ -1,9 +1,14 @@
-function Box(){
+function Box(posX, posY, width, height, options){
     var texture = PIXI.loader.resources.boxImage.texture;
 
-    function SpriteObject(posX, posY, width, height, options) {
+    var SpriteObject = function(posX, posY, width, height, options) {
     	// create a new Sprite using the texture
-    	var boxSprite = new PIXI.Sprite(texture);
+        var boxSprite;
+        if(options && options.tiling){
+            boxSprite = new PIXI.TilingSprite(texture);
+        } else {
+            boxSprite = new PIXI.Sprite(texture);
+        }
 
     	// center the sprite's anchor point
     	boxSprite.anchor.x = 0.5;
@@ -20,16 +25,11 @@ function Box(){
     	return boxSprite;
     };
 
-    function PhysicsObject(posX, posY, width, height, options) {
-        var boxPhysicsObject = Bodies.rectangle(posX, posY, width, height, options);
-
+    var PhysicsObject = function(posX, posY, width, height, options) {
+        var boxPhysicsObject = Matter.Bodies.rectangle(posX, posY, width, height, options);
     	return boxPhysicsObject;
     };
 
-    var create = function(posX, posY, width, height, options) {
-    	return {
-    		sprite: new SpriteObject(posX, posY, width, height, options),
-    		boxPhysicsObject: new PhysicsObject(posX, posY, width, height, options)
-    	};
-    };
+    this.sprite = new SpriteObject(posX, posY, width, height, options);
+    this.boxPhysicsObject = new PhysicsObject(posX, posY, width, height, options);
 }
