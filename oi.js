@@ -61,9 +61,18 @@ function init() {
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
 
+	var boxCollisionSound = new Howl({
+		src: ['sound/boxCollision.wav']
+	});
+
 	//SETUP
 	function setup() {
 		gameState = intro;
+		gameState = game;
+
+		Matter.Events.on(engine, 'collisionStart', function(event) {
+			boxCollisionSound.play();
+		});
 
 		gameLoop();
 	};
@@ -102,11 +111,21 @@ function init() {
 			var ground = new Box(320, 730, 640, 60, { isStatic: true, tiling: true });
 			helper.addBody(ground);
 
-			var boxA = new Box(200, 200, 80, 80);
-			helper.addBody(boxA);
+			// var boxA = new Box(200, 200, 80, 80);
+			// helper.addBody(boxA);
+			//
+			// var boxB = new Box(450, 50, 80, 80);
+			// helper.addBody(boxB);
 
-			var boxB = new Box(450, 50, 80, 80);
-			helper.addBody(boxB);
+
+			for (var i = 0; i < 5; i++) {
+				var x = Math.floor(Math.random() * width - 50) + 1
+				var y = Math.floor(Math.random() * height - 50) + 1
+				var w = Math.floor(Math.random() * 100) + 10
+				var h = w
+				var boxA = new Box(x,y,w,h);
+				helper.addBody(boxA);
+			}
 
 			Engine.run(engine);
 
