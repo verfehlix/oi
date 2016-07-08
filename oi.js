@@ -71,6 +71,7 @@ function init() {
 		gameState = game;
 
 		Matter.Events.on(engine, 'collisionStart', function(event) {
+			console.log(event);
 			boxCollisionSound.play();
 		});
 
@@ -118,10 +119,10 @@ function init() {
 			// helper.addBody(boxB);
 
 
-			for (var i = 0; i < 5; i++) {
-				var x = Math.floor(Math.random() * width - 50) + 1
-				var y = Math.floor(Math.random() * height - 50) + 1
-				var w = Math.floor(Math.random() * 100) + 10
+			for (var i = 0; i < 3; i++) {
+				var x = Math.floor(Math.random() * width - 200) + 100
+				var y = Math.floor(Math.random() * height - 200) + 100
+				var w = Math.floor(Math.random() * 100) + 50
 				var h = w
 				var boxA = new Box(x,y,w,h);
 				helper.addBody(boxA);
