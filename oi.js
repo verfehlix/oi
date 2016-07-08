@@ -17,13 +17,13 @@ function init() {
 	    World = Matter.World,
 	    Bodies = Matter.Bodies;
 
-	//MATTER JS ENGINE
-	var engine = Engine.create();
-
-	//RENDERER & STAGE
+	//pixi js RENDERER & STAGE
 	var renderer = PIXI.autoDetectRenderer(width, height),
 		stage = new PIXI.Container();
 	document.body.appendChild(renderer.view);
+
+	//matter js ENGINE
+	var engine = Engine.create();
 
 	//KEYBOARD INPUT
 	var arrowLeft = keyboard(37);
@@ -48,41 +48,18 @@ function init() {
 
 	//IMAGE LOADING
 	loader
-		.add("boxImage", "img/cat.png")
+		.add("boxImage", "img/box.png")
 		.load(setup);
 
 
 	//sprites, etc.
 	var gameState, message;
 	var bodies = [];
-	var boxes = [];
 
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
 
-	function Box() {
-		var box = new Sprite(
-			PIXI.loader.resources.boxImage.texture
-		);
-
-		box.x = 100;
-		box.y = 200;
-
-		box.anchor.set(0.5, 0.5);
-		// box.rotation = 0.25;
-
-		// box.move = function() {
-		// 	this.x += this.vx;
-		// 	this.y += this.vy;
-		// }
-		// box.vx = 0;
-		// box.vy = 0;
-
-		stage.addChild(box);
-
-		return box;
-	};
-
+	//SETUP
 	function setup() {
 		gameState = intro;
 
@@ -120,42 +97,31 @@ function init() {
 		if(!gameInitHasBeenCalled){
 			stage.removeChild(message);
 
-			// create two boxes and a ground
-			boxA = Bodies.rectangle(200, 200, 80, 80);
-			boxB = Bodies.rectangle(450, 50, 80, 80);
-			ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-			bodies.push(boxA);
-			bodies.push(boxB);
-			bodies.push(ground);
+			var Box = new Box();
 
-			World.add(engine.world,[boxA, boxB, ground]);
+			var ground = Box.create(400, 610, 800, 60, { isStatic: true });
+			stage.addChild(ground.sprite);
+			bodies.push(ground)
+			World.add(engine.world,ground.boxPhysicsObject);
 
-			boxes.push({
-				sprite: new Box(),
-				body: boxA
-			});
+			var boxA = Box.create(200, 200, 80, 80);
+			stage.addChild(boxA.sprite);
+			bodies.push(boxA)
+			World.add(engine.world,boxA.boxPhysicsObject);
 
-			boxes.push({
-				sprite: new Box(),
-				body: boxB
-			});
-
-			boxes.push({
-				sprite: new Box(),
-				body: ground
-			});
-
-			//add them to the world
-			World.add(engine.world, [boxA, boxB, ground]);
+			var boxB = Box.create(450, 50, 80, 80);
+			stage.addChild(boxB.sprite);
+			bodies.push(boxB)
+			World.add(engine.world,boxB.boxPhysicsObject);
 
 			Engine.run(engine);
 
 			gameInitHasBeenCalled = true;
 		}
 
-		for(var b in boxes) {
-			boxes[b].sprite.position = boxes[b].body.position;
-			boxes[b].sprite.rotation = boxes[b].body.angle;
+		for(var b in bodies) {
+			boxes[b].sprite.position = boxes[b].boxPhysicsObject.position;
+			boxes[b].sprite.rotation = boxes[b].boxPhysicsObject.angle;
 		}
 	};
 }
