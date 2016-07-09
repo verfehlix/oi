@@ -5,7 +5,7 @@ function Box(posX, posY, width, height, options){
     	// create a new Sprite using the texture
         var boxSprite;
         if(options && options.tiling){
-            boxSprite = new PIXI.TilingSprite(texture);
+            boxSprite = new PIXI.extras.TilingSprite(texture);
         } else {
             boxSprite = new PIXI.Sprite(texture);
         }

@@ -65,15 +65,40 @@ function init() {
 		src: ['sound/boxCollision.wav']
 	});
 
+	var playedCollisions = [];
+
+	Matter.Events.on(engine, 'collisionStart', function(event) {
+		var pairs = event.pairs;
+
+		for (var i = 0; i < pairs.length; i++) {
+			var pair = pairs[i];
+			var namePair = {
+				a: pair.bodyA.label,
+				b: pair.bodyB.label
+			};
+
+			var alreadyPlayed = false;
+
+			for (var i = 0; i < playedCollisions.length; i++) {
+				if(playedCollisions[i].a === pair.bodyA.label && playedCollisions[i].b === pair.bodyB.label){
+					alreadyPlayed = true;
+				}
+			}
+
+			if(!alreadyPlayed){
+				boxCollisionSound.play();
+
+				playedCollisions.push(namePair);
+			} else {
+				console.log('boo');
+			}
+		}
+	});
+
 	//SETUP
 	function setup() {
 		gameState = intro;
 		gameState = game;
-
-		Matter.Events.on(engine, 'collisionStart', function(event) {
-			console.log(event);
-			boxCollisionSound.play();
-		});
 
 		gameLoop();
 	};
@@ -109,7 +134,7 @@ function init() {
 		if(!gameInitHasBeenCalled){
 			stage.removeChild(message);
 
-			var ground = new Box(320, 730, 640, 60, { isStatic: true, tiling: true });
+			var ground = new Box(320, 730, 640, 60, { isStatic: true, tiling: true, label: 'Ground' });
 			helper.addBody(ground);
 
 			// var boxA = new Box(200, 200, 80, 80);
@@ -119,12 +144,12 @@ function init() {
 			// helper.addBody(boxB);
 
 
-			for (var i = 0; i < 3; i++) {
+			for (var i = 0; i < 7; i++) {
 				var x = Math.floor(Math.random() * width - 200) + 100
 				var y = Math.floor(Math.random() * height - 200) + 100
 				var w = Math.floor(Math.random() * 100) + 50
 				var h = w
-				var boxA = new Box(x,y,w,h);
+				var boxA = new Box(x,y,w,h, {label: 'Box' + i});
 				helper.addBody(boxA);
 			}
 
