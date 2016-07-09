@@ -59,6 +59,7 @@ function init() {
 	//IMAGE LOADING
 	loader
 		.add("boxImage", "img/box.png")
+		.add("wallImage", "img/stone.jpg")
 		.load(setup);
 
 
@@ -132,7 +133,7 @@ function init() {
 		if(!gameInitHasBeenCalled){
 			stage.removeChild(message);
 
-			var ground = new Box(320, 730, 640, 60, { isStatic: true, tiling: true, label: 'Ground' });
+			var ground = new Wall(320, 730, 640, 60, { isStatic: true, tiling: true, label: 'Ground' });
 			helper.addBody(ground);
 
 			for (var i = 0; i < 13; i++) {
@@ -149,8 +150,8 @@ function init() {
 		}
 
 		for(var b in bodies) {
-			bodies[b].sprite.position = bodies[b].boxPhysicsObject.position;
-			bodies[b].sprite.rotation = bodies[b].boxPhysicsObject.angle;
+			bodies[b].sprite.position = bodies[b].physicsObject.position;
+			bodies[b].sprite.rotation = bodies[b].physicsObject.angle;
 		}
 	};
 }

@@ -7,6 +7,6 @@ function Helper(stage, bodies, World, engine){
     this.addBody = function(body){
         this.stage.addChild(body.sprite);
         this.bodies.push(body)
-        this.World.add(this.engine.world,body.boxPhysicsObject);
+        this.World.add(this.engine.world,body.physicsObject);
     }
 };
