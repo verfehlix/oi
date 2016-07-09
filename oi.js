@@ -47,8 +47,10 @@ function init() {
 		} else {
 			if(engine.world.gravity.y === 1){
 				engine.world.gravity.y = -0.5;
+				engine.world.gravity.x = ((Math.random()>0.5)?-1:1) * (Math.floor(Math.random() * 0.2) + 0.05)
 			} else {
 				engine.world.gravity.y = 1;
+				engine.world.gravity.x = 0;
 			}
 		}
 	};
