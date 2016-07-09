@@ -4,6 +4,8 @@ function init() {
 	//SETTINGS
 	var width = 640;
 	var height = 760;
+	var worldBorderOffset = 25;
+	var collisionVelocityThreshold = 3;
 
 	//ALIASES
 	//pixi js
@@ -68,39 +70,31 @@ function init() {
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
 
-	var playedCollisions = [];
-	setInterval(function(){ playedCollisions = []; }, 1000);
-
 	Matter.Events.on(engine, 'collisionStart', function(event) {
 		var pairs = event.pairs;
 
 		for (var i = 0; i < pairs.length; i++) {
 			var pair = pairs[i];
 
-			var namePair = {
-				a: pair.bodyA.label,
-				b: pair.bodyB.label
-			};
-
-			var alreadyPlayed = false;
-
-			for (var i = 0; i < playedCollisions.length; i++) {
-				if(playedCollisions[i].a === pair.bodyA.label && playedCollisions[i].b === pair.bodyB.label){
-					alreadyPlayed = true;
-				}
-			}
-
-			if(!alreadyPlayed){
+			//play collision sound only if velocity is high enough
+			if(pair.bodyA.velocity.y > collisionVelocityThreshold || pair.bodyA.velocity.x > collisionVelocityThreshold ||
+			pair.bodyB.velocity.y > collisionVelocityThreshold || pair.bodyB.velocity.x > collisionVelocityThreshold){
 				playSound("boxCollision");
-				playedCollisions.push(namePair);
 			}
 		}
 	});
 
 	//SETUP
 	function setup() {
-		gameState = intro;
+		// gameState = intro;
 		gameState = game;
+
+		// World.add(engine.world, [
+		//     Bodies.rectangle(width/2, - worldBorderOffset, width + .5 + 2 * worldBorderOffset, 50+ .5, { isStatic: true }),
+		//     Bodies.rectangle(width/2, height + worldBorderOffset, width + .5 + 2 * worldBorderOffset, 50 +.5, { isStatic: true }),
+		//     Bodies.rectangle(width + worldBorderOffset, height/2, 50 + .5, height + .5 + 2 * worldBorderOffset, { isStatic: true }),
+		//     Bodies.rectangle(- worldBorderOffset, height/2, 50 + .5, height + .5 + 2 * worldBorderOffset, { isStatic: true })
+		// ]);
 
 		gameLoop();
 	};
@@ -139,12 +133,11 @@ function init() {
 			var ground = new Box(320, 730, 640, 60, { isStatic: true, tiling: true, label: 'Ground' });
 			helper.addBody(ground);
 
-			for (var i = 0; i < 7; i++) {
-				var x = Math.floor(Math.random() * width - 200) + 100
-				var y = Math.floor(Math.random() * height - 200) + 100
-				var w = 50
-				var h = w
-				var boxA = new Box(x,y,w,h, {label: 'Box' + i});
+			for (var i = 0; i < 13; i++) {
+				var x = Math.floor(Math.random() * width - 75) + 100;
+				var y = Math.floor(Math.random() * height - 200) + 0;
+				var size = Math.floor(Math.random() * 75) + 50;
+				var boxA = new Box(x,y,size,size, {label: 'Box' + i});
 				helper.addBody(boxA);
 			}
 
