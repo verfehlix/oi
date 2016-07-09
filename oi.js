@@ -62,14 +62,11 @@ function init() {
 	var gameState, message;
 	var bodies = [];
 
-	var helper = new Helper(stage, bodies, World, engine);
+	var helper = new Helper(stage, bodies, World
+		, engine);
 
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
-
-	var boxCollisionSound = new Howl({
-		src: ['sound/boxCollision.wav']
-	});
 
 	var playedCollisions = [];
 	setInterval(function(){ playedCollisions = []; }, 1000);
@@ -94,7 +91,7 @@ function init() {
 			}
 
 			if(!alreadyPlayed){
-				boxCollisionSound.play();
+				playSound("boxCollision");
 				playedCollisions.push(namePair);
 			}
 		}
