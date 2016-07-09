@@ -42,6 +42,12 @@ function init() {
 	enter.press = function() {
 		if(gameState === intro){
 			gameState = game;
+		} else {
+			if(engine.world.gravity.y === 1){
+				engine.world.gravity.y = -0.5;
+			} else {
+				engine.world.gravity.y = 1;
+			}
 		}
 	};
 	enter.release = function() {};
@@ -66,12 +72,14 @@ function init() {
 	});
 
 	var playedCollisions = [];
+	setInterval(function(){ playedCollisions = []; }, 1000);
 
 	Matter.Events.on(engine, 'collisionStart', function(event) {
 		var pairs = event.pairs;
 
 		for (var i = 0; i < pairs.length; i++) {
 			var pair = pairs[i];
+
 			var namePair = {
 				a: pair.bodyA.label,
 				b: pair.bodyB.label
@@ -87,10 +95,7 @@ function init() {
 
 			if(!alreadyPlayed){
 				boxCollisionSound.play();
-
 				playedCollisions.push(namePair);
-			} else {
-				console.log('boo');
 			}
 		}
 	});
@@ -137,17 +142,10 @@ function init() {
 			var ground = new Box(320, 730, 640, 60, { isStatic: true, tiling: true, label: 'Ground' });
 			helper.addBody(ground);
 
-			// var boxA = new Box(200, 200, 80, 80);
-			// helper.addBody(boxA);
-			//
-			// var boxB = new Box(450, 50, 80, 80);
-			// helper.addBody(boxB);
-
-
 			for (var i = 0; i < 7; i++) {
 				var x = Math.floor(Math.random() * width - 200) + 100
 				var y = Math.floor(Math.random() * height - 200) + 100
-				var w = Math.floor(Math.random() * 100) + 50
+				var w = 50
 				var h = w
 				var boxA = new Box(x,y,w,h, {label: 'Box' + i});
 				helper.addBody(boxA);
