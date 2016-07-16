@@ -2,10 +2,10 @@ window.onload = init;
 
 function init() {
 	//SETTINGS
-	var width = 640;
-	var height = 760;
+	var width = 1250;
+	var height = 750;
 	var worldBorderOffset = 25;
-	var collisionVelocityThreshold = 3;
+	var collisionVelocityThreshold = 5;
 
 	//ALIASES
 	//pixi js
@@ -67,8 +67,7 @@ function init() {
 	var gameState, message;
 	var bodies = [];
 
-	var helper = new Helper(stage, bodies, World
-		, engine);
+	var helper = new Helper(stage, bodies, World , engine);
 
 	var introInitHasBeenCalled = false;
 	var gameInitHasBeenCalled = false;
@@ -92,12 +91,13 @@ function init() {
 		// gameState = intro;
 		gameState = game;
 
-		// World.add(engine.world, [
-		//     Bodies.rectangle(width/2, - worldBorderOffset, width + .5 + 2 * worldBorderOffset, 50+ .5, { isStatic: true }),
-		//     Bodies.rectangle(width/2, height + worldBorderOffset, width + .5 + 2 * worldBorderOffset, 50 +.5, { isStatic: true }),
-		//     Bodies.rectangle(width + worldBorderOffset, height/2, 50 + .5, height + .5 + 2 * worldBorderOffset, { isStatic: true }),
-		//     Bodies.rectangle(- worldBorderOffset, height/2, 50 + .5, height + .5 + 2 * worldBorderOffset, { isStatic: true })
-		// ]);
+		//borders
+		World.add(engine.world, [
+		    Bodies.rectangle(width/2, - worldBorderOffset, width + .5 + 2 * worldBorderOffset, 50+ .5, { isStatic: true }),
+		    Bodies.rectangle(width/2, height + worldBorderOffset, width + .5 + 2 * worldBorderOffset, 50 +.5, { isStatic: true }),
+		    Bodies.rectangle(width + worldBorderOffset, height/2, 50 + .5, height + .5 + 2 * worldBorderOffset, { isStatic: true }),
+		    Bodies.rectangle(- worldBorderOffset, height/2, 50 + .5, height + .5 + 2 * worldBorderOffset, { isStatic: true })
+		]);
 
 		gameLoop();
 	};
@@ -133,16 +133,10 @@ function init() {
 		if(!gameInitHasBeenCalled){
 			stage.removeChild(message);
 
-			var ground = new Wall(320, 730, 640, 60, { isStatic: true, tiling: true, label: 'Ground' });
+			var ground = new Wall(width/2, height-15, width, 30, { isStatic: true, tiling: true, label: 'Ground' });
 			helper.addBody(ground);
 
-			for (var i = 0; i < 13; i++) {
-				var x = Math.floor(Math.random() * width - 75) + 100;
-				var y = Math.floor(Math.random() * height - 200) + 0;
-				var size = Math.floor(Math.random() * 75) + 50;
-				var boxA = new Box(x,y,size,size, {label: 'Box' + i});
-				helper.addBody(boxA);
-			}
+			helper.addRandomBoxes(width, height, 10);
 
 			Engine.run(engine);
 
