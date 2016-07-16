@@ -6,6 +6,7 @@ function init() {
 	var height = 750;
 	var worldBorderOffset = 25;
 	var collisionVelocityThreshold = 5;
+	var bgColor = 0x777AAA;
 
 	//ALIASES
 	//pixi js
@@ -22,23 +23,12 @@ function init() {
 	//pixi js RENDERER & STAGE
 	var renderer = PIXI.autoDetectRenderer(width, height),
 		stage = new PIXI.Container();
+	renderer.backgroundColor = bgColor;
 	document.body.appendChild(renderer.view);
 
 	//matter js ENGINE
 	var engine = Engine.create();
 
-	//KEYBOARD INPUT
-	var arrowLeft = keyboard(37);
-	arrowLeft.press = function() {};
-	arrowLeft.release = function() {};
-
-	var arrowRight = keyboard(39);
-	arrowRight.press = function() {};
-	arrowRight.release = function() {};
-
-	var spacebar = keyboard(32);
-	spacebar.press = function() {};
-	spacebar.release = function() {};
 
 	var enter = keyboard(13);
 	enter.press = function() {
@@ -60,6 +50,7 @@ function init() {
 	loader
 		.add("boxImage", "img/box.png")
 		.add("wallImage", "img/stone.jpg")
+		.add("playerImage", "img/player.png")
 		.load(setup);
 
 
@@ -136,7 +127,10 @@ function init() {
 			var ground = new Wall(width/2, height-15, width, 30, { isStatic: true, tiling: true, label: 'Ground' });
 			helper.addBody(ground);
 
-			helper.addRandomBoxes(width, height, 10);
+			var player = new Player(width/2, height/2, 50, 100,{ label: 'Player' });
+			helper.addBody(player);
+
+			helper.addRandomBoxes(width, height,15);
 
 			Engine.run(engine);
 
